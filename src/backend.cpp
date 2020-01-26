@@ -24,12 +24,14 @@ void backend_tbb(vector<int>& result, std::function<int (int)>& callback)
 	tbb::task_arena arena(nthreads, 1);
 	tbb::task_scheduler_init init(nthreads);
 
-	group.run( [&] {
-		tbb::parallel_for(tbb::blocked_range<int>(0, result.size()),
-			[&](const tbb::blocked_range<int>& range)
-		{
-			for (int i = range.begin(); i != range.end(); i++)
-				result[i] = callback(i);
+	arena.execute( [&] { 
+		group.run( [&] {
+			tbb::parallel_for(tbb::blocked_range<int>(0, result.size()),
+				[&](const tbb::blocked_range<int>& range)
+			{
+				for (int i = range.begin(); i != range.end(); i++)
+					result[i] = callback(i);
+			});
 		});
 	});
 
