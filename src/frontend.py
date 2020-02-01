@@ -3,16 +3,14 @@
 from python_tbb import *
 import numpy as np
 
-def callback(a) :
-	return int(a) * 10
+def callback(a, i, result) :
+	result.__setitem__(i, int(a) * 10)
 
 def main() :
-	length = 10
-	result1 = stdvectorint(np.zeros(length, np.int32))
-	result2 = stdvectorint(np.zeros(length, np.int32))
+	length = 1000
 	
-	backend_serial(result1, callback)
-	backend_tbb(result2, callback)
+	result1 = backend_serial(length, callback)
+	result2 = backend_tbb(length, callback)
 
 	for i in range(length) :
 		print("%d vs %d" % (result1[i], result2[i]))
